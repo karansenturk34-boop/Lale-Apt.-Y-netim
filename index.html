@@ -1,0 +1,1263 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lale Apt. Kasa Defteri</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Crect%20width%3D%2232%22%20height%3D%2232%22%20rx%3D%227%22%20fill%3D%22%232E5233%22/%3E%3Cpath%20d%3D%22M7%2015L16%208l9%207v10a1.5%201.5%200%200%201-1.5%201.5H8.5A1.5%201.5%200%200%201%207%2025z%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%222%22%20stroke-linejoin%3D%22round%22/%3E%3Cpath%20d%3D%22M13%2026v-8h6v8%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%222%22%20stroke-linejoin%3D%22round%22/%3E%3C/svg%3E">
+<style>
+body { margin: 0; padding: 16px; background: #E9E4D6; box-sizing: border-box; }
+* { box-sizing: border-box; }
+@keyframes blinkFlash { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+#yenile-btn { animation: blinkFlash 1.2s ease-in-out infinite; }
+</style>
+</head>
+<body>
+<div id="splash-overlay" style="position: fixed; inset: 0; z-index: 9999; background: linear-gradient(135deg, #2E5233, #3D7A52); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 2rem; font-family: 'Bahnschrift', 'Segoe UI', Helvetica, Arial, sans-serif;">
+  <div style="font-size: 38px; font-weight: 800; color: #fff; letter-spacing: 1px; margin-bottom: 10px; text-transform: uppercase;">Hoşgeldiniz</div>
+  <div style="font-size: 14px; color: #fff; opacity: 0.85; margin-bottom: 8px; text-transform: uppercase;">Lale Apartmanı Yönetim Sistemi</div>
+  <div style="font-size: 10px; color: #fff; opacity: 0.6; margin-bottom: 36px; text-transform: uppercase;">Crafted by KaranYaman</div>
+  <button id="splash-devam" style="background: #fff; color: #2E5233; border: none; padding: 14px 40px; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; text-transform: uppercase;">Devam Et</button>
+</div>
+
+<div id="daire-select-overlay" style="display: none; position: fixed; inset: 0; z-index: 9998; background: linear-gradient(135deg, #2E5233, #3D7A52); flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 2rem 1.5rem; font-family: 'Bahnschrift', 'Segoe UI', Helvetica, Arial, sans-serif; overflow-y: auto;">
+  <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" style="margin-bottom: 10px;"><path d="M3 10l9-7 9 7v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 21V12h6v9"/></svg>
+  <div style="font-size: 22px; font-weight: 800; color: #fff; letter-spacing: 0.5px; margin-bottom: 6px; text-transform: uppercase;">Dairenizi Seçiniz</div>
+  <div style="font-size: 12px; color: #fff; opacity: 0.8; margin-bottom: 26px; text-transform: uppercase; max-width: 320px;">Aidat durumunuzu görüntülemek için daire numaranızı seçin</div>
+  <div id="daire-select-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 420px; width: 100%; margin-bottom: 22px;"></div>
+  <button id="daire-select-atla" style="background: none; border: none; color: #fff; opacity: 0.65; font-size: 11px; cursor: pointer; text-decoration: underline; text-transform: uppercase; font-family: inherit;">Atla</button>
+</div>
+
+<div id="durum-overlay" style="display: none; position: fixed; inset: 0; z-index: 9998; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 2rem; font-family: 'Bahnschrift', 'Segoe UI', Helvetica, Arial, sans-serif;">
+  <div id="durum-icon-wrap" style="width: 78px; height: 78px; border-radius: 50%; background: rgba(255,255,255,0.18); display: flex; align-items: center; justify-content: center; margin-bottom: 22px;">
+    <svg id="durum-icon-odendi" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" style="display: none;"><path d="M20 6L9 17l-5-5"/></svg>
+    <svg id="durum-icon-odenmedi" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" style="display: none;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/></svg>
+  </div>
+  <div id="durum-baslik" style="font-size: 24px; font-weight: 800; color: #fff; letter-spacing: 0.5px; margin-bottom: 10px; text-transform: uppercase;"></div>
+  <div id="durum-aciklama" style="font-size: 13px; color: #fff; opacity: 0.9; margin-bottom: 32px; max-width: 320px; text-transform: uppercase; line-height: 1.6;"></div>
+  <button id="durum-devam" style="background: #fff; padding: 14px 40px; border: none; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; text-transform: uppercase;">Devam Et</button>
+</div>
+
+<script>
+  (function() {
+    try {
+      if (sessionStorage.getItem('lale-flow-done')) {
+        document.getElementById('splash-overlay').style.display = 'none';
+      }
+    } catch (e) {}
+  })();
+</script>
+<div id="app" style="--paper:#F7F4EC; --card:#FFFFFF; --ink:#242E27; --wine:#B8503F; --forest:#3D7A52; --steel:#3E6E8E; --slate:#8A8676; --gold:#C99A4A; --rule:#E4DFCE; --shadow:0 1px 3px rgba(36,46,39,0.08); font-family: 'Bahnschrift', 'Segoe UI', Helvetica, Arial, sans-serif; text-transform: uppercase; background: var(--paper); color: var(--ink); border-radius: 16px; padding: 0; overflow: hidden; max-width: 800px; margin: 0 auto;">
+
+
+  <div style="padding: 1.75rem 1.75rem 1.5rem; background: linear-gradient(135deg, #2E5233, #3D7A52); text-align: center;">
+    <h1 style="margin: 0; font-size: 30px; font-weight: 700; color: #fff;">Lale Apartmanı</h1>
+  </div>
+
+  <div id="save-banner" style="display: none; padding: 10px 1.5rem; background: #FBEAE7; color: var(--wine); font-size: 13px; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;">
+    <span>Kayıt sırasında bir bağlantı sorunu oluştu. Veriler ekranda duruyor ama henüz kaydedilmedi.</span>
+    <button id="save-retry" style="background: var(--wine); color: #fff; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; white-space: nowrap;">Tekrar dene</button>
+  </div>
+
+  <div id="tab-ozet">
+
+  <div style="padding: 1.25rem 1.5rem 0;">
+    <a href="https://ebelediye.bcekmece.bel.tr/Giris/Index/?returnURL=/Borc/Index" target="_blank" rel="noopener noreferrer" style="display: flex; align-items: center; justify-content: center; gap: 10px; text-decoration: none; background: linear-gradient(135deg, #3E6E8E, #2E5233); color: #fff; padding: 14px 18px; border-radius: 10px; font-size: 14px; font-weight: 700; box-shadow: var(--shadow);">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 4v0M16 4v0"/><path d="M8 14h2M8 17h5"/></svg>
+      Belediye Borç Sorgulama ve Ödeme
+    </a>
+  </div>
+
+  <div style="padding: 1rem 1.5rem 0; text-align: center; font-size: 12px; color: var(--slate); font-weight: 600;">
+    <span id="secili-ay-etiket"></span>
+  </div>
+
+  <div style="padding: 0.5rem 1.5rem 0.5rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px;">
+    <div style="background: linear-gradient(135deg, #2E5233, #3D7A52); border-radius: 12px; padding: 14px 16px; box-shadow: var(--shadow); display: flex; gap: 10px; align-items: center; color: #fff;">
+      <div style="width: 36px; height: 36px; border-radius: 9px; background: rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M3 10l9-7 9 7v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 21V12h6v9"/></svg>
+      </div>
+      <div><div style="font-size: 11px; opacity: 0.85;">Kasa Bakiyesi</div><div id="balance" style="font-weight: 700; font-size: 17px;">0,00 ₺</div></div>
+    </div>
+    <div style="background: var(--card); border-radius: 12px; padding: 14px 16px; box-shadow: var(--shadow); display: flex; gap: 10px; align-items: center;">
+      <div style="width: 36px; height: 36px; border-radius: 9px; background: rgba(61,122,82,0.12); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3D7A52" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      </div>
+      <div><div style="font-size: 11px; color: var(--slate);">Gelir</div><div id="tot-gelir" style="font-weight: 700; color: var(--forest); font-size: 15px;">0,00 ₺</div></div>
+    </div>
+    <div style="background: var(--card); border-radius: 12px; padding: 14px 16px; box-shadow: var(--shadow); display: flex; gap: 10px; align-items: center;">
+      <div style="width: 36px; height: 36px; border-radius: 9px; background: rgba(184,80,63,0.12); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#B8503F" stroke-width="2"><path d="M12 22V2M7 19h9.5a3.5 3.5 0 0 0 0-7h-5a3.5 3.5 0 0 1 0-7H18"/></svg>
+      </div>
+      <div><div style="font-size: 11px; color: var(--slate);">Gider</div><div id="tot-gider" style="font-weight: 700; color: var(--wine); font-size: 15px;">0,00 ₺</div></div>
+    </div>
+    <div style="background: var(--card); border-radius: 12px; padding: 14px 16px; box-shadow: var(--shadow); display: flex; gap: 10px; align-items: center;">
+      <div style="width: 36px; height: 36px; border-radius: 9px; background: rgba(62,110,142,0.12); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3E6E8E" stroke-width="2"><rect x="3" y="9" width="18" height="11" rx="2"/><path d="M8 9V6a4 4 0 0 1 8 0v3"/></svg>
+      </div>
+      <div><div style="font-size: 11px; color: var(--slate);">Ödenen daire</div><div id="tot-odenen" style="font-weight: 700; color: var(--steel); font-size: 15px;">0 / 13</div></div>
+    </div>
+  </div>
+
+  <div style="padding: 0 1.5rem; text-align: center;">
+    <button id="yenile-btn" style="background: linear-gradient(135deg, #2E5233, #3D7A52); color: #fff; border: none; padding: 14px 28px; border-radius: 10px; cursor: pointer; font-size: 15px; font-weight: 700; font-family: 'Bahnschrift', 'Segoe UI', Helvetica, Arial, sans-serif; display: inline-flex; align-items: center; gap: 8px;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+      BİLGİYİ GÜNCELLE
+    </button>
+  </div>
+
+  <div class="admin-only" style="padding: 0.5rem 1.5rem 0;">
+    <div style="background: var(--card); border-radius: 12px; padding: 16px; box-shadow: var(--shadow);">
+      <div style="font-size: 14px; font-weight: 600; margin-bottom: 10px;">Aylık Kasa Durumu</div>
+      <div id="aylik-kasa"></div>
+    </div>
+  </div>
+
+  <div style="padding: 1.25rem 1.5rem 1.75rem; display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+    <div style="background: var(--card); border-radius: 12px; padding: 10px 12px; box-shadow: var(--shadow);">
+      <div style="font-size: 11px; font-weight: 600; margin-bottom: 4px;">Gelir dağılımı</div>
+      <div style="position: relative; height: 100px;"><canvas id="chart-gelir"></canvas></div>
+    </div>
+    <div style="background: var(--card); border-radius: 12px; padding: 10px 12px; box-shadow: var(--shadow);">
+      <div style="font-size: 11px; font-weight: 600; margin-bottom: 4px;">Gider dağılımı</div>
+      <div style="position: relative; height: 100px;"><canvas id="chart-gider"></canvas></div>
+    </div>
+  </div>
+
+  <div style="padding: 0 1.5rem 1.75rem;">
+    <div style="background: var(--card); border-radius: 12px; padding: 16px; box-shadow: var(--shadow);">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+        <div style="font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 6px;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#242E27" stroke-width="2"><path d="M3 9.5 12 3l9 6.5V21a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg>
+          Aidat durumu
+        </div>
+        <div style="display: flex; gap: 8px; align-items: center; font-size: 13px;">
+          <select id="ay-sec" style="border: 1px solid var(--rule); border-radius: 6px; padding: 4px 8px;"></select>
+        </div>
+      </div>
+      <div style="margin-bottom: 8px; display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; color: var(--forest);">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3D7A52" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+        Ödeyenler <span id="odeyen-sayisi" style="font-weight:400; color:var(--slate);"></span>
+      </div>
+      <div id="daire-grid-odeyen" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 8px; margin-bottom: 16px;"></div>
+
+      <div style="margin-bottom: 8px; display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; color: var(--wine);">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#B8503F" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v5M12 16h.01"/></svg>
+        Ödemeyenler <span id="odemeyen-sayisi" style="font-weight:400; color:var(--slate);"></span>
+      </div>
+      <div id="daire-grid-odemeyen" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 8px;"></div>
+      <div id="odeme-secim" style="display: none; margin-top: 14px; padding: 12px 14px; background: #F7F4EC; border: 1px solid var(--rule); border-radius: 10px;">
+        <div id="odeme-secim-baslik" style="font-size: 13px; font-weight: 600; margin-bottom: 8px;"></div>
+        <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 10px; font-size: 13px;">
+          <span style="color: var(--slate);">Tutar</span>
+          <input id="odeme-secim-tutar" type="number" step="0.01" style="width: 90px; border: 1px solid var(--rule); border-radius: 6px; padding: 4px 6px;" />
+          <span>₺</span>
+        </div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <button class="odeme-tipi-btn" data-tip="Havale/EFT" style="background: var(--steel); color: #fff; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-size: 13px; display: flex; align-items: center; gap: 6px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="3" y="9" width="18" height="11" rx="2"/><path d="M8 9V6a4 4 0 0 1 8 0v3"/></svg>
+            Havale/EFT
+          </button>
+          <button class="odeme-tipi-btn" data-tip="Elden Nakit" style="background: var(--forest); color: #fff; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-size: 13px; display: flex; align-items: center; gap: 6px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9 12h6M12 9v6"/></svg>
+            Elden Nakit
+          </button>
+          <button id="odeme-secim-iptal" style="background: none; color: var(--slate); border: 1px solid var(--rule); padding: 8px 14px; border-radius: 6px; cursor: pointer; font-size: 13px;">İptal</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  </div>
+
+  <div id="tab-islemler" style="display: none;">
+
+  <div class="admin-only" style="padding: 1.25rem 1.5rem 1.25rem;">
+    <div style="background: var(--card); border-radius: 12px; padding: 16px; box-shadow: var(--shadow);">
+      <div style="font-size: 14px; font-weight: 600; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+        Konut Ekstresi
+      </div>
+      <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: end;">
+        <div style="flex: 1; min-width: 140px;">
+          <div style="font-size: 11px; color: var(--slate); margin-bottom: 4px;">Daire</div>
+          <select id="ekstre-daire" style="width: 100%; border: 1px solid var(--rule); border-radius: 6px; padding: 8px;"></select>
+        </div>
+        <div style="flex: 1; min-width: 120px;">
+          <div style="font-size: 11px; color: var(--slate); margin-bottom: 4px;">Başlangıç</div>
+          <input id="ekstre-baslangic" type="date" style="width: 100%; border: 1px solid var(--rule); border-radius: 6px; padding: 8px;" />
+        </div>
+        <div style="flex: 1; min-width: 120px;">
+          <div style="font-size: 11px; color: var(--slate); margin-bottom: 4px;">Bitiş</div>
+          <input id="ekstre-bitis" type="date" style="width: 100%; border: 1px solid var(--rule); border-radius: 6px; padding: 8px;" />
+        </div>
+        <button id="ekstre-al" style="background: var(--ink); color: #fff; border: none; padding: 9px 18px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; white-space: nowrap;">Rapor Al</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="admin-only" style="padding: 0 1.5rem 1.25rem; display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+    <div style="background: var(--card); border-radius: 12px; padding: 16px; box-shadow: var(--shadow);">
+      <div style="font-size: 14px; font-weight: 600; margin-bottom: 10px; color: var(--forest);">Diğer gelir ekle</div>
+      <input id="i-desc" type="text" placeholder="Açıklama (ör. bağış, kira geliri)" style="width: 100%; box-sizing: border-box; border: 1px solid var(--rule); border-radius: 6px; padding: 8px; margin-bottom: 8px;" />
+      <div style="display: flex; gap: 8px;">
+        <input id="i-amount" type="number" step="0.01" placeholder="Tutar" style="flex: 1; border: 1px solid var(--rule); border-radius: 6px; padding: 8px; min-width: 0;" />
+        <button id="i-add" style="background: var(--forest); color: #fff; border: none; padding: 0 16px; border-radius: 6px; cursor: pointer; font-weight: 600;">Ekle</button>
+      </div>
+    </div>
+    <div style="background: var(--card); border-radius: 12px; padding: 16px; box-shadow: var(--shadow);">
+      <div style="font-size: 14px; font-weight: 600; margin-bottom: 10px; color: var(--wine);">Gider ekle</div>
+      <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+        <select id="g-kategori" style="flex: 1; border: 1px solid var(--rule); border-radius: 6px; padding: 8px; min-width: 0;">
+          <option value="Temizlik">Temizlik</option>
+          <option value="Elektrik">Elektrik</option>
+          <option value="Asansör Bakım">Asansör Bakım</option>
+          <option value="Yıllık Asansör Bakımı">Yıllık Asansör Bakımı</option>
+          <option value="Diğer">Diğer</option>
+        </select>
+        <input id="g-amount" type="number" step="0.01" placeholder="Tutar" style="flex: 1; border: 1px solid var(--rule); border-radius: 6px; padding: 8px; min-width: 0;" />
+      </div>
+      <div style="display: flex; gap: 8px;">
+        <input id="g-desc" type="text" placeholder="Açıklama" style="flex: 1; border: 1px solid var(--rule); border-radius: 6px; padding: 8px; min-width: 0;" />
+        <button id="g-add" style="background: var(--wine); color: #fff; border: none; padding: 0 16px; border-radius: 6px; cursor: pointer; font-weight: 600;">Ekle</button>
+      </div>
+    </div>
+  </div>
+
+  <div style="padding: 0 1.5rem 1.75rem;">
+    <div style="background: var(--card); border-radius: 12px; padding: 18px; box-shadow: var(--shadow);">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
+        <div style="font-size: 15px; font-weight: 700; letter-spacing: 0.2px;">İşlemler <span id="islem-sayisi" style="font-weight: 400; color: var(--slate); font-size: 12px;"></span></div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <button id="pdf-rapor" style="background: linear-gradient(135deg, #242E27, #3D4A3F); color: #fff; border: none; padding: 9px 16px; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 7px; box-shadow: 0 1px 2px rgba(36,46,39,0.15);">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+            İşlemleri PDF Yap
+          </button>
+        </div>
+      </div>
+
+      <div style="margin-bottom: 14px;">
+        <div style="position: relative;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--slate)" stroke-width="2" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); pointer-events: none;"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+          <input id="islem-ara" type="text" placeholder="Açıklamada ara..." style="width: 100%; border: 1px solid var(--rule); border-radius: 8px; padding: 8px 10px 8px 30px; font-size: 13px; box-sizing: border-box;" />
+        </div>
+      </div>
+
+      <div style="font-size: 12px; font-weight: 700; color: var(--forest); margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#3D7A52" stroke-width="2.5"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+        Gelirler
+      </div>
+      <div style="overflow-x: auto; margin-bottom: 18px;">
+        <table style="width: 100%; border-collapse: collapse; font-size: 13px; min-width: 420px;">
+          <thead>
+            <tr style="border-bottom: 2px solid var(--forest);">
+              <th style="text-align: left; padding: 8px 6px; color: var(--slate); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.4px;">Tarih</th>
+              <th style="text-align: left; padding: 8px 6px; color: var(--slate); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.4px;">Kategori</th>
+              <th style="text-align: left; padding: 8px 6px; color: var(--slate); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.4px;">Açıklama</th>
+              <th style="text-align: right; padding: 8px 6px; color: var(--slate); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.4px;">Tutar</th>
+              <th style="width: 32px;"></th>
+            </tr>
+          </thead>
+          <tbody id="rows-gelir"></tbody>
+        </table>
+        <div id="empty-gelir" style="padding: 1rem 0; text-align: center; color: var(--slate); font-style: italic; font-size: 12px; display: none;">Bu ayda gelir kaydı yok.</div>
+      </div>
+
+      <div style="font-size: 12px; font-weight: 700; color: var(--wine); margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#B8503F" stroke-width="2.5"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+        Giderler
+      </div>
+      <div style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse; font-size: 13px; min-width: 420px;">
+          <thead>
+            <tr style="border-bottom: 2px solid var(--wine);">
+              <th style="text-align: left; padding: 8px 6px; color: var(--slate); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.4px;">Tarih</th>
+              <th style="text-align: left; padding: 8px 6px; color: var(--slate); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.4px;">Kategori</th>
+              <th style="text-align: left; padding: 8px 6px; color: var(--slate); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.4px;">Açıklama</th>
+              <th style="text-align: right; padding: 8px 6px; color: var(--slate); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.4px;">Tutar</th>
+              <th style="width: 32px;"></th>
+            </tr>
+          </thead>
+          <tbody id="rows-gider"></tbody>
+        </table>
+        <div id="empty-gider" style="padding: 1rem 0; text-align: center; color: var(--slate); font-style: italic; font-size: 12px; display: none;">Bu ayda gider kaydı yok.</div>
+      </div>
+    </div>
+  </div>
+
+  </div>
+
+  <div id="tab-ayarlar" style="display: none;">
+
+  <div style="padding: 1.25rem 1.5rem 1.25rem;">
+    <span id="mod-etiket" style="display: none; color: var(--slate); font-size: 12px;">Görüntüleme modu — sadece bilgi amaçlı</span>
+    <button id="admin-giris" style="width: 100%; background: linear-gradient(135deg, #242E27, #3D4A3F); color: #fff; border: none; padding: 14px 18px; border-radius: 10px; cursor: pointer; font-size: 14px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: var(--shadow); letter-spacing: 0.3px;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      <span id="admin-giris-label">Admin Panel</span>
+    </button>
+  </div>
+
+  <div style="padding: 0 1.5rem 1.25rem;">
+    <div style="background: var(--card); border-radius: 12px; padding: 16px; box-shadow: var(--shadow);">
+      <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--rule);">
+        <div>
+          <div style="font-weight: 700; font-size: 14px;">Kaan Şentürk</div>
+          <div style="font-size: 12px; color: var(--slate);">0555 087 19 07</div>
+        </div>
+        <a href="tel:05550871907" style="background: var(--forest); width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none; flex-shrink: 0;">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        </a>
+      </div>
+      <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 0;">
+        <div>
+          <div style="font-weight: 700; font-size: 14px;">Adem Özcan</div>
+          <div style="font-size: 12px; color: var(--slate);">0536 260 57 51</div>
+        </div>
+        <a href="tel:05362605751" style="background: var(--forest); width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none; flex-shrink: 0;">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div style="padding: 0 1.5rem 1.25rem;">
+    <div style="background: var(--card); border-radius: 12px; padding: 16px; box-shadow: var(--shadow);">
+      <div style="font-size: 11px; color: var(--slate); margin-bottom: 12px; letter-spacing: 0.5px;">BİNA AİDAT BİLGİLERİ</div>
+      <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--rule); font-size: 13px;">
+        <span style="color: var(--slate);">Daire 1-2</span><span style="font-weight: 700;">350,00 ₺</span>
+      </div>
+      <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--rule); font-size: 13px;">
+        <span style="color: var(--slate);">Daire 3-13</span><span style="font-weight: 700;">400,00 ₺</span>
+      </div>
+      <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--rule); font-size: 13px;">
+        <span style="color: var(--slate);">Daire Sayısı</span><span style="font-weight: 700;">13</span>
+      </div>
+      <div style="display: flex; justify-content: space-between; padding: 8px 0; font-size: 13px;">
+        <span style="color: var(--slate);">Bina Adı</span><span style="font-weight: 700;">Lale Apartmanı</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="admin-only" style="padding: 0 1.5rem 1.25rem;">
+    <div style="background: var(--card); border-radius: 12px; padding: 16px; box-shadow: var(--shadow);">
+      <div style="font-size: 11px; color: var(--slate); margin-bottom: 12px; letter-spacing: 0.5px;">SON ZİYARETLER</div>
+      <div id="ziyaret-listesi"></div>
+    </div>
+  </div>
+
+  <div class="admin-only" style="padding: 0 1.5rem 1.75rem;">
+    <div style="background: var(--card); border-radius: 12px; padding: 16px; box-shadow: var(--shadow);">
+      <div style="font-size: 11px; color: var(--slate); margin-bottom: 12px; letter-spacing: 0.5px;">YEDEKLEME</div>
+      <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+        <button id="yedek-al" style="background: none; border: 1px solid var(--rule); color: var(--ink); padding: 8px 14px; border-radius: 6px; cursor: pointer; font-size: 12px; display: flex; align-items: center; gap: 6px;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>
+          Yedek al
+        </button>
+        <button id="yedek-yukle-btn" style="background: none; border: 1px solid var(--rule); color: var(--ink); padding: 8px 14px; border-radius: 6px; cursor: pointer; font-size: 12px; display: flex; align-items: center; gap: 6px;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21V9M7 14l5-5 5 5M5 3h14"/></svg>
+          Yedekten yükle
+        </button>
+        <input id="yedek-yukle-input" type="file" accept="application/json" style="display: none;" />
+      </div>
+    </div>
+  </div>
+
+  <div style="padding: 0 1.5rem 1.75rem; text-align: center; font-size: 10px; color: var(--slate);">
+    Lale Apartmanı Yönetim Sistemi
+  </div>
+
+  </div>
+
+  <div style="height: 76px;"></div>
+
+  <div id="bottom-nav" style="position: fixed; bottom: 0; left: 0; right: 0; max-width: 800px; margin: 0 auto; background: var(--card); border-top: 1px solid var(--rule); display: flex; justify-content: space-around; padding: 8px 4px calc(8px + env(safe-area-inset-bottom)); z-index: 500;">
+    <button class="navbtn" data-tab="ozet" style="background: none; border: none; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 3px; color: var(--forest); font-weight: 700; font-size: 10px; padding: 4px 6px;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 10l9-7 9 7v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 21V12h6v9"/></svg>
+      Ana Sayfa
+    </button>
+    <button class="navbtn" data-tab="islemler" style="background: none; border: none; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 3px; color: var(--slate); font-weight: 400; font-size: 10px; padding: 4px 6px;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+      İşlemler
+    </button>
+    <button class="navbtn" data-tab="ayarlar" style="background: none; border: none; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 3px; color: var(--slate); font-weight: 400; font-size: 10px; padding: 4px 6px;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      Ayarlar
+    </button>
+  </div>
+
+  </div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"></script>
+<script>
+(function() {
+  var STORAGE_KEY = 'apartman-defteri-kayitlar';
+  var entries = [];
+  var months = [];
+  var now = new Date();
+  var ayBaslangic = new Date(2026, 7, 1);
+  for (var i = 0; i <= 11; i++) {
+    var d = new Date(ayBaslangic.getFullYear(), ayBaslangic.getMonth() + i, 1);
+    months.push(d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0'));
+  }
+  var currentMonth = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
+
+  function getSelectedMonth() {
+    var sel = document.getElementById('ay-sec');
+    return (sel && sel.value) ? sel.value : currentMonth;
+  }
+  var monthNames = ['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
+  var gelirChart = null, giderChart = null;
+  var DAIRE_COUNT = 13;
+  var defaultDaireNames = {
+    1: 'Kaan Bey', 2: 'Halis Bey', 3: 'Cafer Bey', 4: 'Şaban Bey',
+    5: 'Mehmet Bey', 6: 'Halime Hanım', 7: 'Murat Bey', 8: 'Erdem Bey',
+    9: 'Fatma Hanım', 10: 'Özcan Bey', 11: 'Adem Bey', 12: 'Gülşen Hanım',
+    13: 'Tufan Bey'
+  };
+  var daireNames = Object.assign({}, defaultDaireNames);
+
+  function monthLabel(m) {
+    var parts = m.split('-');
+    return monthNames[parseInt(parts[1], 10) - 1] + ' ' + parts[0];
+  }
+
+  function fmt(n) {
+    var v = Math.round(n * 100) / 100;
+    return v.toLocaleString('tr-TR', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' ₺';
+  }
+
+  function fmtDate(iso) {
+    var d = new Date(iso);
+    return d.toLocaleDateString('tr-TR', {day: '2-digit', month: '2-digit', year: 'numeric'});
+  }
+
+  var API_URL = '/.netlify/functions/data';
+  var isAdmin = false;
+  var adminPassword = null;
+
+  async function save() {
+    if (!isAdmin) return false;
+    try {
+      var res = await fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: adminPassword, entries: entries, daireNames: daireNames })
+      });
+      if (!res.ok) throw new Error('save failed: ' + res.status);
+      hideSaveBanner();
+      return true;
+    } catch (e) {
+      console.error('Kaydetme hatasi', e);
+      showSaveBanner();
+      return false;
+    }
+  }
+
+  function showSaveBanner() {
+    var b = document.getElementById('save-banner');
+    b.style.display = 'flex';
+  }
+
+  function hideSaveBanner() {
+    var b = document.getElementById('save-banner');
+    b.style.display = 'none';
+  }
+
+  document.getElementById('save-retry').addEventListener('click', function() {
+    save();
+  });
+
+  var visits = [];
+
+  async function load() {
+    try {
+      var res = await fetch(API_URL, { cache: 'no-store' });
+      if (res.ok) {
+        var data = await res.json();
+        if (data && Array.isArray(data.entries)) entries = data.entries;
+        if (data && data.daireNames && typeof data.daireNames === 'object') {
+          daireNames = Object.assign({}, defaultDaireNames, data.daireNames);
+        }
+        if (data && Array.isArray(data.visits)) visits = data.visits;
+      }
+    } catch (e) { entries = []; }
+    initMonthSelect();
+    renderAll();
+    renderZiyaretler();
+  }
+
+  function renderZiyaretler() {
+    var el = document.getElementById('ziyaret-listesi');
+    if (!el) return;
+    if (visits.length === 0) {
+      el.innerHTML = '<div style="padding: 10px 0; text-align: center; color: var(--slate); font-style: italic; font-size: 12px;">Henüz ziyaret kaydı yok.</div>';
+      return;
+    }
+    var son = visits.slice(-15).reverse();
+    el.innerHTML = son.map(function(v) {
+      var d = new Date(v.date);
+      var tarih = d.toLocaleDateString('tr-TR') + ' ' + d.toLocaleTimeString('tr-TR', {hour: '2-digit', minute: '2-digit'});
+      var isim = daireNames[v.daire] || '';
+      return '<div style="display:flex; justify-content:space-between; padding:7px 0; border-bottom:1px solid var(--rule); font-size:12px;">' +
+        '<span style="font-weight:600;">Daire ' + v.daire + (isim ? ' - ' + isim : '') + '</span>' +
+        '<span style="color:var(--slate);">' + tarih + '</span>' +
+      '</div>';
+    }).join('');
+  }
+
+  async function verifyPassword(pw) {
+    try {
+      var res = await fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: pw, action: 'verify' })
+      });
+      return res.ok;
+    } catch (e) { return false; }
+  }
+
+  function setAdminOnlyVisibility(on) {
+    Array.prototype.forEach.call(document.querySelectorAll('.admin-only'), function(el) {
+      if (el.dataset.originalDisplay === undefined) {
+        el.dataset.originalDisplay = el.style.display || '';
+      }
+      el.style.display = on ? el.dataset.originalDisplay : 'none';
+    });
+  }
+
+  function setAdminUI(on) {
+    isAdmin = on;
+    document.getElementById('mod-etiket').textContent = on ? 'Yönetici modu — düzenleme açık' : 'Görüntüleme modu — sadece bilgi amaçlı';
+    document.getElementById('admin-giris-label').textContent = on ? 'Çıkış Yap' : 'Admin Panel';
+    setAdminOnlyVisibility(on);
+    renderAll();
+  }
+
+  document.getElementById('admin-giris').addEventListener('click', async function() {
+    if (isAdmin) {
+      adminPassword = null;
+      sessionStorage.removeItem('lale-admin-pw');
+      setAdminUI(false);
+      return;
+    }
+    var pw = prompt('Yönetici şifresini girin:');
+    if (!pw) return;
+    var ok = await verifyPassword(pw);
+    if (ok) {
+      adminPassword = pw;
+      sessionStorage.setItem('lale-admin-pw', pw);
+      setAdminUI(true);
+    } else {
+      alert('Şifre yanlış.');
+    }
+  });
+
+  async function initAdmin() {
+    var saved = sessionStorage.getItem('lale-admin-pw');
+    if (saved) {
+      var ok = await verifyPassword(saved);
+      if (ok) { adminPassword = saved; isAdmin = true; }
+      else sessionStorage.removeItem('lale-admin-pw');
+    }
+    document.getElementById('mod-etiket').textContent = isAdmin ? 'Yönetici modu — düzenleme açık' : 'Görüntüleme modu — sadece bilgi amaçlı';
+    document.getElementById('admin-giris-label').textContent = isAdmin ? 'Çıkış Yap' : 'Admin Panel';
+    setAdminOnlyVisibility(isAdmin);
+  }
+
+  function initMonthSelect() {
+    var sel = document.getElementById('ay-sec');
+    sel.innerHTML = '';
+    var eslesenVar = months.indexOf(currentMonth) !== -1;
+    months.forEach(function(m, idx) {
+      var opt = document.createElement('option');
+      opt.value = m;
+      opt.textContent = monthLabel(m);
+      if (eslesenVar ? (m === currentMonth) : (idx === 0)) opt.selected = true;
+      sel.appendChild(opt);
+    });
+    sel.addEventListener('change', function() { renderDaireGrid(); renderTotals(); renderRows(); });
+  }
+
+  function daireTutari(daire) {
+    return (daire === 1 || daire === 2) ? 350 : 400;
+  }
+
+  function paidDaireler(month) {
+    var map = {};
+    entries.forEach(function(e) {
+      if (e.type === 'gelir' && e.category === 'Aidat' && e.month === month) map[e.daire] = e;
+    });
+    return map;
+  }
+
+  function paymentIcon(tip) {
+    if (tip === 'Elden Nakit') return '<circle cx="12" cy="12" r="9"/><path d="M9 12h6M12 9v6"/>';
+    return '<rect x="3" y="9" width="18" height="11" rx="2"/><path d="M8 9V6a4 4 0 0 1 8 0v3"/>';
+  }
+
+  function renderDaireGrid() {
+    var gridOdeyen = document.getElementById('daire-grid-odeyen');
+    var gridOdemeyen = document.getElementById('daire-grid-odemeyen');
+    var month = document.getElementById('ay-sec').value;
+    var paid = paidDaireler(month);
+    gridOdeyen.innerHTML = '';
+    gridOdemeyen.innerHTML = '';
+    var count = 0;
+    for (var i = 1; i <= DAIRE_COUNT; i++) {
+      var entry = paid[i];
+      var isPaid = !!entry;
+      if (isPaid) count++;
+      var cell = document.createElement('div');
+      cell.style.cssText = 'position:relative; text-align:center; padding:10px 4px; border-radius:9px; font-size:12px; cursor:' + (isAdmin ? 'pointer' : 'default') + '; transition:transform 0.1s; border:1px solid transparent; background:' +
+        (isPaid ? 'var(--forest)' : 'var(--wine)') + '; color:#fff; font-weight:600; line-height:1.3;';
+      var badge = isPaid
+        ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" style="display:block; margin:2px auto 0; opacity:0.85;">' + paymentIcon(entry.paymentType) + '</svg>'
+        : '';
+      var renameBtn = isAdmin
+        ? '<button class="rename-btn" data-daire="' + i + '" title="Mülk Sahibi Değiştir" style="position:absolute; top:2px; right:2px; background:rgba(0,0,0,0.15); border:none; border-radius:5px; width:18px; height:18px; padding:0; cursor:pointer; display:flex; align-items:center; justify-content:center;"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>'
+        : '';
+      var statusIcon = isPaid
+        ? '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" style="display:inline-block; vertical-align:-1px; margin-left:3px;"><path d="M20 6L9 17l-5-5"/></svg>'
+        : '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" style="display:inline-block; vertical-align:-1px; margin-left:3px;"><circle cx="12" cy="12" r="10"/><path d="M12 8v5M12 16h.01"/></svg>';
+      cell.innerHTML = renameBtn +
+        '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" style="display:block; margin:0 auto 4px;"><path d="M3 9.5 12 3l9 6.5V21a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg>' +
+        '<div style="font-size:10px; opacity:0.8;">Daire ' + i + '</div>' +
+        '<div>' + daireNames[i] + statusIcon + '</div>' + badge;
+      cell.addEventListener('click', function(daire, isPaidNow) {
+        return function() { onDaireClick(daire, month, isPaidNow); };
+      }(i, isPaid));
+      (isPaid ? gridOdeyen : gridOdemeyen).appendChild(cell);
+    }
+    document.getElementById('tot-odenen').textContent = count + ' / ' + DAIRE_COUNT;
+    document.getElementById('odeyen-sayisi').textContent = '(' + count + ')';
+    document.getElementById('odemeyen-sayisi').textContent = '(' + (DAIRE_COUNT - count) + ')';
+
+    Array.prototype.forEach.call(document.querySelectorAll('.rename-btn'), function(btn) {
+      btn.addEventListener('click', function(ev) {
+        ev.stopPropagation();
+        renameDaire(parseInt(btn.getAttribute('data-daire'), 10));
+      });
+    });
+  }
+
+  async function renameDaire(daire) {
+    if (!isAdmin) return;
+    var yeni = prompt('Daire ' + daire + ' için yeni mülk sahibi / kiracı adı:', daireNames[daire] || '');
+    if (yeni === null) return;
+    yeni = yeni.trim();
+    if (!yeni) return;
+    daireNames[daire] = yeni;
+    renderAll();
+    var basarili = await save();
+    if (!basarili) {
+      alert('Kayıt sırasında bir sorun oluştu. Lütfen tekrar deneyin veya bağlantını kontrol et.');
+    }
+  }
+
+  var pendingDaire = null, pendingMonth = null;
+
+  function onDaireClick(daire, month, isPaid) {
+    if (!isAdmin) return;
+    if (isPaid) {
+      var paid = paidDaireler(month);
+      var entry = paid[daire];
+      entries = entries.filter(function(e) { return e.id !== entry.id; });
+      save();
+      renderAll();
+    } else {
+      pendingDaire = daire;
+      pendingMonth = month;
+      document.getElementById('odeme-secim-baslik').textContent =
+        'Daire ' + daire + ' - ' + daireNames[daire] + ' için ödeme tipi seç (' + monthLabel(month) + ')';
+      document.getElementById('odeme-secim-tutar').value = daireTutari(daire);
+      document.getElementById('odeme-secim').style.display = 'block';
+    }
+  }
+
+  function confirmOdeme(tip) {
+    if (!isAdmin) { closeOdemeSecim(); return; }
+    var amount = parseFloat(document.getElementById('odeme-secim-tutar').value) || 0;
+    if (amount > 0 && pendingDaire) {
+      entries.push({
+        id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+        type: 'gelir', category: 'Aidat',
+        desc: 'Daire ' + pendingDaire + ' - ' + daireNames[pendingDaire] + ' aidatı (' + monthLabel(pendingMonth) + ', ' + tip + ')',
+        amount: amount, daire: pendingDaire, month: pendingMonth, paymentType: tip, date: new Date().toISOString()
+      });
+      save();
+      renderAll();
+    }
+    closeOdemeSecim();
+  }
+
+  function closeOdemeSecim() {
+    pendingDaire = null;
+    pendingMonth = null;
+    document.getElementById('odeme-secim').style.display = 'none';
+  }
+
+  function toggleDaire(daire, month, isPaid) {
+    if (isPaid) {
+      var paid = paidDaireler(month);
+      var id = paid[daire];
+      entries = entries.filter(function(e) { return e.id !== id; });
+    } else {
+      var amount = parseFloat(document.getElementById('aidat-tutar').value) || 0;
+      if (amount <= 0) return;
+      entries.push({
+        id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+        type: 'gelir', category: 'Aidat',
+        desc: 'Daire ' + daire + ' - ' + daireNames[daire] + ' aidatı (' + monthLabel(month) + ')',
+        amount: amount, daire: daire, month: month, date: new Date().toISOString()
+      });
+    }
+    save();
+    renderAll();
+  }
+
+  function computeTotals() {
+    var t = {aidat: 0, digerGelir: 0, temizlik: 0, elektrik: 0, asansor: 0, yillikBakim: 0, digerGider: 0};
+    entries.forEach(function(e) {
+      if (entryMonth(e) !== getSelectedMonth()) return;
+      if (e.type === 'gelir' && e.category === 'Aidat') t.aidat += e.amount;
+      else if (e.type === 'gelir' && e.category === 'Diğer Gelir') t.digerGelir += e.amount;
+      else if (e.type === 'gider' && e.category === 'Temizlik') t.temizlik += e.amount;
+      else if (e.type === 'gider' && e.category === 'Elektrik') t.elektrik += e.amount;
+      else if (e.type === 'gider' && e.category === 'Asansör Bakım') t.asansor += e.amount;
+      else if (e.type === 'gider' && e.category === 'Yıllık Asansör Bakımı') t.yillikBakim += e.amount;
+      else if (e.type === 'gider' && e.category === 'Diğer') t.digerGider += e.amount;
+    });
+    return t;
+  }
+
+  function renderCharts(t) {
+    var gelirTotal = t.aidat + t.digerGelir;
+    var giderTotal = t.temizlik + t.elektrik + t.asansor + t.yillikBakim + t.digerGider;
+
+    var pctFormatter = function(value, ctx) {
+      var data = ctx.chart.data.datasets[0].data;
+      var sum = data.reduce(function(a, b) { return a + b; }, 0);
+      if (sum <= 0 || value <= 0) return '';
+      var pct = Math.round((value / sum) * 100);
+      return pct + '%';
+    };
+
+    var datalabelsOpts = {
+      color: '#fff',
+      font: { size: 9, weight: '700' },
+      formatter: pctFormatter
+    };
+
+    var gCtx = document.getElementById('chart-gelir').getContext('2d');
+    if (gelirChart) gelirChart.destroy();
+    gelirChart = new Chart(gCtx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Aidat', 'Diğer gelir'],
+        datasets: [{ data: gelirTotal > 0 ? [t.aidat, t.digerGelir] : [1, 0], backgroundColor: ['#3D7A52', '#8FBF9F'], borderWidth: 0 }]
+      },
+      options: {
+        plugins: {
+          legend: { position: 'bottom', labels: { boxWidth: 7, font: { size: 9 }, padding: 6 } },
+          datalabels: gelirTotal > 0 ? datalabelsOpts : { display: false }
+        },
+        cutout: '65%'
+      },
+      plugins: [ChartDataLabels]
+    });
+
+    var xCtx = document.getElementById('chart-gider').getContext('2d');
+    if (giderChart) giderChart.destroy();
+    giderChart = new Chart(xCtx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Temizlik', 'Elektrik', 'Asansör Bakım', 'Yıllık Asansör Bakımı', 'Diğer'],
+        datasets: [{ data: giderTotal > 0 ? [t.temizlik, t.elektrik, t.asansor, t.yillikBakim, t.digerGider] : [1, 0, 0, 0, 0], backgroundColor: ['#B8503F', '#D9A441', '#3E6E8E', '#C99A4A', '#8A8676'], borderWidth: 0 }]
+      },
+      options: {
+        plugins: {
+          legend: { position: 'bottom', labels: { boxWidth: 7, font: { size: 9 }, padding: 6 } },
+          datalabels: giderTotal > 0 ? datalabelsOpts : { display: false }
+        },
+        cutout: '65%'
+      },
+      plugins: [ChartDataLabels]
+    });
+  }
+
+  function renderAylikKasa() {
+    var container = document.getElementById('aylik-kasa');
+    if (!container) return;
+    var groups = {};
+    entries.forEach(function(e) {
+      var m = entryMonth(e);
+      if (!groups[m]) groups[m] = { gelir: 0, gider: 0 };
+      if (e.type === 'gelir') groups[m].gelir += e.amount;
+      else groups[m].gider += e.amount;
+    });
+    var months = Object.keys(groups).sort().reverse();
+    container.innerHTML = '';
+    if (months.length === 0) {
+      container.innerHTML = '<div style="padding: 1rem 0; text-align: center; color: var(--slate); font-style: italic; font-size: 13px;">Henüz kayıt yok.</div>';
+      return;
+    }
+    months.forEach(function(m) {
+      var g = groups[m];
+      var bakiye = g.gelir - g.gider;
+      var color = bakiye >= 0 ? 'var(--forest)' : 'var(--wine)';
+      var row = document.createElement('div');
+      row.style.cssText = 'display:flex; align-items:center; justify-content:space-between; gap:10px; padding:9px 0; border-bottom:1px solid var(--rule); font-size:13px;';
+      row.innerHTML =
+        '<div style="font-weight:600; min-width:110px;">' + monthLabel(m) + '</div>' +
+        '<div style="flex:1; display:flex; gap:14px; justify-content:flex-end; font-size:12px;">' +
+          '<span style="color:var(--forest);">+' + fmt(g.gelir) + '</span>' +
+          '<span style="color:var(--wine);">−' + fmt(g.gider) + '</span>' +
+        '</div>' +
+        '<div style="font-weight:700; color:' + color + '; min-width:90px; text-align:right;">' + fmt(bakiye) + '</div>';
+      container.appendChild(row);
+    });
+  }
+
+  function renderTotals() {
+    var t = computeTotals();
+    var gelirTotal = t.aidat + t.digerGelir;
+    var giderTotal = t.temizlik + t.elektrik + t.asansor + t.yillikBakim + t.digerGider;
+
+    var secilenAy = getSelectedMonth();
+    var etiketEl = document.getElementById('secili-ay-etiket');
+    if (etiketEl) etiketEl.textContent = monthLabel(secilenAy);
+
+    var buAyGelir = 0, buAyGider = 0;
+    entries.forEach(function(e) {
+      if (entryMonth(e) !== secilenAy) return;
+      if (e.type === 'gelir') buAyGelir += e.amount;
+      else buAyGider += e.amount;
+    });
+    document.getElementById('tot-gelir').textContent = fmt(buAyGelir);
+    document.getElementById('tot-gider').textContent = fmt(buAyGider);
+    var balance = buAyGelir - buAyGider;
+    var balEl = document.getElementById('balance');
+    balEl.textContent = fmt(balance);
+    renderCharts(t);
+    renderAylikKasa();
+  }
+
+  function categoryColor(e) {
+    if (e.type === 'gelir' && e.category === 'Aidat') return '#3D7A52';
+    if (e.type === 'gelir') return '#8FBF9F';
+    if (e.category === 'Temizlik') return '#B8503F';
+    if (e.category === 'Elektrik') return '#D9A441';
+    if (e.category === 'Asansör Bakım') return '#3E6E8E';
+    if (e.category === 'Yıllık Asansör Bakımı') return '#C99A4A';
+    return '#8A8676';
+  }
+
+  var aramaMetni = '';
+
+  function renderTable(tip, tbodyId, emptyId) {
+    var rowsEl = document.getElementById(tbodyId);
+    var emptyEl = document.getElementById(emptyId);
+    rowsEl.innerHTML = '';
+
+    var filtered = entries.filter(function(e) {
+      if (entryMonth(e) !== getSelectedMonth()) return false;
+      if (e.type !== tip) return false;
+      if (aramaMetni && e.desc.toLowerCase().indexOf(aramaMetni) === -1) return false;
+      return true;
+    });
+
+    if (filtered.length === 0) {
+      emptyEl.style.display = 'block';
+      return;
+    }
+    emptyEl.style.display = 'none';
+
+    var sorted = filtered.slice().sort(function(a, b) { return new Date(b.date) - new Date(a.date); });
+    sorted.forEach(function(e, idx) {
+      var row = document.createElement('tr');
+      row.style.cssText = 'border-bottom: 1px solid var(--rule); background: ' + (idx % 2 === 0 ? 'transparent' : 'rgba(138,134,118,0.05)') + ';';
+      var sign = e.type === 'gelir' ? '+' : '−';
+      var color = categoryColor(e);
+      row.innerHTML =
+        '<td style="padding:9px 6px; color:var(--slate); font-size:12px; white-space:nowrap;">' + fmtDate(e.date) + '</td>' +
+        '<td style="padding:9px 6px;"><span style="display:inline-block; padding:3px 9px; border-radius:20px; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.3px; color:#fff; background:' + color + ';">' + e.category + '</span></td>' +
+        '<td style="padding:9px 6px;">' + e.desc + '</td>' +
+        '<td style="padding:9px 6px; text-align:right; font-weight:700; color:' + color + '; white-space:nowrap;">' + sign + ' ' + fmt(e.amount) + '</td>' +
+        '<td style="padding:9px 6px; text-align:center;">' + (isAdmin ? '<button data-id="' + e.id + '" class="del-btn" style="background:none; border:none; color:var(--slate); cursor:pointer; font-size:16px; padding:0 4px;" title="Sil">×</button>' : '') + '</td>';
+      rowsEl.appendChild(row);
+    });
+
+    Array.prototype.forEach.call(rowsEl.querySelectorAll('.del-btn'), function(btn) {
+      btn.addEventListener('click', function() {
+        entries = entries.filter(function(e) { return e.id !== btn.getAttribute('data-id'); });
+        save();
+        renderAll();
+      });
+    });
+  }
+
+  function renderRows() {
+    renderTable('gelir', 'rows-gelir', 'empty-gelir');
+    renderTable('gider', 'rows-gider', 'empty-gider');
+    var toplamSayi = entries.filter(function(e) { return entryMonth(e) === getSelectedMonth(); }).length;
+    document.getElementById('islem-sayisi').textContent = toplamSayi > 0 ? '(' + toplamSayi + ')' : '';
+  }
+
+  function renderAll() {
+    renderDaireGrid();
+    renderRows();
+    renderTotals();
+    var ekstreSel = document.getElementById('ekstre-daire');
+    if (ekstreSel) {
+      var onceki = ekstreSel.value;
+      fillEkstreDaireSelect();
+      if (onceki) ekstreSel.value = onceki;
+    }
+  }
+
+  document.getElementById('islem-ara').addEventListener('input', function(ev) {
+    aramaMetni = ev.target.value.trim().toLowerCase();
+    renderRows();
+  });
+
+  function addGelir() {
+    if (!isAdmin) return;
+    var descEl = document.getElementById('i-desc');
+    var amountEl = document.getElementById('i-amount');
+    var desc = descEl.value.trim();
+    var amount = parseFloat(amountEl.value);
+    if (!desc || !amount || amount <= 0) return;
+    entries.push({
+      id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+      type: 'gelir', category: 'Diğer Gelir', desc: desc, amount: amount, date: new Date().toISOString()
+    });
+    descEl.value = ''; amountEl.value = ''; descEl.focus();
+    save(); renderAll();
+  }
+
+  function addGider() {
+    if (!isAdmin) return;
+    var kategori = document.getElementById('g-kategori').value;
+    var descEl = document.getElementById('g-desc');
+    var amountEl = document.getElementById('g-amount');
+    var desc = descEl.value.trim();
+    var amount = parseFloat(amountEl.value);
+    if (!desc || !amount || amount <= 0) return;
+    entries.push({
+      id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+      type: 'gider', category: kategori, desc: desc, amount: amount, date: new Date().toISOString()
+    });
+    descEl.value = ''; amountEl.value = ''; descEl.focus();
+    save(); renderAll();
+  }
+
+  document.getElementById('i-add').addEventListener('click', addGelir);
+  document.getElementById('i-amount').addEventListener('keydown', function(ev) { if (ev.key === 'Enter') addGelir(); });
+  document.getElementById('i-desc').addEventListener('keydown', function(ev) { if (ev.key === 'Enter') addGelir(); });
+
+  document.getElementById('g-add').addEventListener('click', addGider);
+  document.getElementById('g-amount').addEventListener('keydown', function(ev) { if (ev.key === 'Enter') addGider(); });
+  document.getElementById('g-desc').addEventListener('keydown', function(ev) { if (ev.key === 'Enter') addGider(); });
+
+  Array.prototype.forEach.call(document.querySelectorAll('.odeme-tipi-btn'), function(btn) {
+    btn.addEventListener('click', function() { confirmOdeme(btn.getAttribute('data-tip')); });
+  });
+  document.getElementById('odeme-secim-iptal').addEventListener('click', closeOdemeSecim);
+
+  function entryMonth(e) {
+    if (e.type === 'gelir' && e.category === 'Aidat' && e.month) return e.month;
+    var d = new Date(e.date);
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+  }
+
+  function generateIslemlerPdf() {
+    var month = getSelectedMonth();
+    var filtered = entries.filter(function(e) {
+      if (entryMonth(e) !== month) return false;
+      if (aramaMetni && e.desc.toLowerCase().indexOf(aramaMetni) === -1) return false;
+      return true;
+    }).sort(function(a, b) { return new Date(b.date) - new Date(a.date); });
+
+    var toplamGelir = filtered.filter(function(e) { return e.type === 'gelir'; }).reduce(function(s, e) { return s + e.amount; }, 0);
+    var toplamGider = filtered.filter(function(e) { return e.type === 'gider'; }).reduce(function(s, e) { return s + e.amount; }, 0);
+
+    var filtreEtiket = monthLabel(month);
+
+    var rowsHtml = filtered.length === 0
+      ? '<tr><td colspan="4" style="padding:10px; text-align:center; color:#888; font-style:italic;">Kayıt yok.</td></tr>'
+      : filtered.map(function(e) {
+          var sign = e.type === 'gelir' ? '+' : '−';
+          var color = e.type === 'gelir' ? '#2E5233' : '#B8503F';
+          return '<tr>' +
+            '<td style="padding:6px 8px; border-bottom:1px solid #ddd;">' + fmtDate(e.date) + '</td>' +
+            '<td style="padding:6px 8px; border-bottom:1px solid #ddd;">' + e.category + '</td>' +
+            '<td style="padding:6px 8px; border-bottom:1px solid #ddd;">' + e.desc + '</td>' +
+            '<td style="padding:6px 8px; border-bottom:1px solid #ddd; text-align:right; white-space:nowrap; color:' + color + '; font-weight:600;">' + sign + ' ' + fmt(e.amount) + '</td>' +
+          '</tr>';
+        }).join('');
+
+    var html = '<!DOCTYPE html><html lang="tr"><head><meta charset="UTF-8">' +
+      '<title>İşlemler</title>' +
+      '<style>' +
+      'body{font-family:Georgia,"Times New Roman",serif;color:#242E27;padding:32px;max-width:800px;margin:0 auto;}' +
+      'h1{font-size:20px;margin:0;}' +
+      '.sub{color:#666;font-size:12px;margin-top:4px;}' +
+      'table{width:100%;border-collapse:collapse;font-size:12px;margin-top:16px;}' +
+      'th{text-align:left;padding:6px 8px;border-bottom:2px solid #242E27;font-size:10px;text-transform:uppercase;letter-spacing:0.3px;color:#555;}' +
+      '.ozet{display:flex;gap:16px;margin-top:14px;flex-wrap:wrap;}' +
+      '.kart{border:1px solid #ddd;border-radius:8px;padding:10px 14px;min-width:130px;}' +
+      '.kart .label{font-size:10px;color:#888;text-transform:uppercase;}' +
+      '.kart .deger{font-size:16px;font-weight:700;margin-top:2px;}' +
+      '@media print{body{padding:12px;}}' +
+      '</style></head><body>' +
+      '<h1>Lale Apt. Kasa Defteri - İşlemler</h1>' +
+      '<div class="sub">Dönem: ' + filtreEtiket + (aramaMetni ? ' &middot; Arama: "' + aramaMetni + '"' : '') + ' &middot; ' + filtered.length + ' kayıt &middot; Oluşturulma: ' + new Date().toLocaleDateString('tr-TR') + '</div>' +
+      '<div class="ozet">' +
+        '<div class="kart"><div class="label">Toplam Gelir</div><div class="deger" style="color:#2E5233;">' + fmt(toplamGelir) + '</div></div>' +
+        '<div class="kart"><div class="label">Toplam Gider</div><div class="deger" style="color:#B8503F;">' + fmt(toplamGider) + '</div></div>' +
+      '</div>' +
+      '<table><thead><tr><th>Tarih</th><th>Kategori</th><th>Açıklama</th><th style="text-align:right;">Tutar</th></tr></thead><tbody>' +
+      rowsHtml + '</tbody></table>' +
+      '</body></html>';
+
+    var win = window.open('', '_blank');
+    if (!win) {
+      alert('Rapor penceresi açılamadı. Tarayıcının açılır pencere engelleyicisini kontrol et.');
+      return;
+    }
+    win.document.open();
+    win.document.write(html);
+    win.document.close();
+    setTimeout(function() { win.print(); }, 300);
+  }
+
+  document.getElementById('pdf-rapor').addEventListener('click', generateIslemlerPdf);
+
+  function fillEkstreDaireSelect() {
+    var sel = document.getElementById('ekstre-daire');
+    sel.innerHTML = '';
+    for (var i = 1; i <= DAIRE_COUNT; i++) {
+      var opt = document.createElement('option');
+      opt.value = i;
+      opt.textContent = 'Daire ' + i + ' - ' + daireNames[i];
+      sel.appendChild(opt);
+    }
+  }
+
+  function generateKonutEkstresi() {
+    var daire = parseInt(document.getElementById('ekstre-daire').value, 10);
+    var baslangicStr = document.getElementById('ekstre-baslangic').value;
+    var bitisStr = document.getElementById('ekstre-bitis').value;
+
+    var baslangic = baslangicStr ? new Date(baslangicStr + 'T00:00:00') : null;
+    var bitis = bitisStr ? new Date(bitisStr + 'T23:59:59') : null;
+
+    var kayitlar = entries.filter(function(e) {
+      if (e.type !== 'gelir' || e.category !== 'Aidat' || e.daire !== daire) return false;
+      var d = new Date(e.date);
+      if (baslangic && d < baslangic) return false;
+      if (bitis && d > bitis) return false;
+      return true;
+    }).sort(function(a, b) { return new Date(a.date) - new Date(b.date); });
+
+    var toplam = kayitlar.reduce(function(s, e) { return s + e.amount; }, 0);
+
+    var rowsHtml = kayitlar.length === 0
+      ? '<tr><td colspan="4" style="padding:10px; text-align:center; color:#888; font-style:italic;">Bu tarih aralığında kayıt yok.</td></tr>'
+      : kayitlar.map(function(e) {
+          return '<tr>' +
+            '<td style="padding:6px 8px; border-bottom:1px solid #ddd;">' + fmtDate(e.date) + '</td>' +
+            '<td style="padding:6px 8px; border-bottom:1px solid #ddd;">' + monthLabel(e.month) + '</td>' +
+            '<td style="padding:6px 8px; border-bottom:1px solid #ddd;">' + (e.paymentType || '-') + '</td>' +
+            '<td style="padding:6px 8px; border-bottom:1px solid #ddd; text-align:right; white-space:nowrap; color:#2E5233; font-weight:600;">' + fmt(e.amount) + '</td>' +
+          '</tr>';
+        }).join('');
+
+    var aralikMetni = (baslangicStr ? fmtDate(baslangic) : 'başlangıç') + ' — ' + (bitisStr ? fmtDate(bitis) : 'bugün');
+
+    var html = '<!DOCTYPE html><html lang="tr"><head><meta charset="UTF-8">' +
+      '<title>Daire ' + daire + ' Ekstresi</title>' +
+      '<style>' +
+      'body{font-family:Georgia,"Times New Roman",serif;color:#242E27;padding:32px;max-width:800px;margin:0 auto;}' +
+      'h1{font-size:20px;margin:0;}' +
+      '.sub{color:#666;font-size:12px;margin-top:4px;}' +
+      'table{width:100%;border-collapse:collapse;font-size:12px;margin-top:16px;}' +
+      'th{text-align:left;padding:6px 8px;border-bottom:2px solid #242E27;font-size:10px;text-transform:uppercase;letter-spacing:0.3px;color:#555;}' +
+      '.kart{border:1px solid #ddd;border-radius:8px;padding:10px 14px;min-width:150px;display:inline-block;margin-top:14px;}' +
+      '.kart .label{font-size:10px;color:#888;text-transform:uppercase;}' +
+      '.kart .deger{font-size:18px;font-weight:700;margin-top:2px;color:#2E5233;}' +
+      '@media print{body{padding:12px;}}' +
+      '</style></head><body>' +
+      '<h1>Lale Apartmanı - Konut Ekstresi</h1>' +
+      '<div class="sub">Daire ' + daire + ' - ' + daireNames[daire] + ' &middot; Tarih aralığı: ' + aralikMetni + ' &middot; Oluşturulma: ' + new Date().toLocaleDateString('tr-TR') + '</div>' +
+      '<div class="kart"><div class="label">Toplam Ödenen</div><div class="deger">' + fmt(toplam) + '</div></div>' +
+      '<table><thead><tr><th>Ödeme Tarihi</th><th>Ait Olduğu Ay</th><th>Ödeme Tipi</th><th style="text-align:right;">Tutar</th></tr></thead><tbody>' +
+      rowsHtml + '</tbody></table>' +
+      '</body></html>';
+
+    var win = window.open('', '_blank');
+    if (!win) {
+      alert('Rapor penceresi açılamadı. Tarayıcının açılır pencere engelleyicisini kontrol et.');
+      return;
+    }
+    win.document.open();
+    win.document.write(html);
+    win.document.close();
+    setTimeout(function() { win.print(); }, 300);
+  }
+
+  document.getElementById('ekstre-al').addEventListener('click', generateKonutEkstresi);
+
+  function exportBackup() {
+    var blob = new Blob([JSON.stringify(entries, null, 2)], { type: 'application/json' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'lale-apt-kasa-defteri-yedek-' + new Date().toISOString().slice(0, 10) + '.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  function importBackup(file) {
+    if (!isAdmin) return;
+    var reader = new FileReader();
+    reader.onload = function(ev) {
+      try {
+        var data = JSON.parse(ev.target.result);
+        if (!Array.isArray(data)) throw new Error('invalid');
+        entries = data;
+        save();
+        renderAll();
+      } catch (err) {
+        alert('Dosya okunamadı. Geçerli bir yedek dosyası seç.');
+      }
+    };
+    reader.readAsText(file);
+  }
+
+  document.getElementById('yedek-al').addEventListener('click', exportBackup);
+  document.getElementById('yedek-yukle-btn').addEventListener('click', function() {
+    document.getElementById('yedek-yukle-input').click();
+  });
+  document.getElementById('yedek-yukle-input').addEventListener('change', function(ev) {
+    if (ev.target.files && ev.target.files[0]) {
+      importBackup(ev.target.files[0]);
+      ev.target.value = '';
+    }
+  });
+
+  document.getElementById('yenile-btn').addEventListener('click', async function() {
+    var btn = document.getElementById('yenile-btn');
+    btn.disabled = true;
+    await load();
+    btn.disabled = false;
+  });
+
+  var splashBtn = document.getElementById('splash-devam');
+  if (splashBtn) {
+    splashBtn.addEventListener('click', function() {
+      document.getElementById('splash-overlay').style.display = 'none';
+      openDaireSelect();
+    });
+  }
+
+  function openDaireSelect() {
+    var grid = document.getElementById('daire-select-grid');
+    grid.innerHTML = '';
+    for (var i = 1; i <= DAIRE_COUNT; i++) {
+      var btn = document.createElement('button');
+      btn.style.cssText = 'background: rgba(255,255,255,0.14); color: #fff; border: 1.5px solid rgba(255,255,255,0.4); border-radius: 12px; padding: 14px 8px; cursor: pointer; font-family: inherit; display: flex; flex-direction: column; align-items: center; gap: 4px; transition: background 0.15s;';
+      btn.innerHTML =
+        '<span style="font-size: 10px; opacity: 0.75; letter-spacing: 0.3px;">DAİRE ' + i + '</span>' +
+        '<span style="font-size: 13px; font-weight: 700; line-height: 1.2;">' + (daireNames[i] || '') + '</span>';
+      btn.addEventListener('click', function(daire) {
+        return function() { onVisitorSelectDaire(daire); };
+      }(i));
+      grid.appendChild(btn);
+    }
+    document.getElementById('daire-select-overlay').style.display = 'flex';
+  }
+
+  function finishFlow() {
+    document.getElementById('daire-select-overlay').style.display = 'none';
+    document.getElementById('durum-overlay').style.display = 'none';
+    try { sessionStorage.setItem('lale-flow-done', '1'); } catch (e) {}
+  }
+
+  document.getElementById('daire-select-atla').addEventListener('click', finishFlow);
+
+  async function onVisitorSelectDaire(daire) {
+    document.getElementById('daire-select-overlay').style.display = 'none';
+
+    try {
+      fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'log-visit', daire: daire })
+      });
+    } catch (e) {}
+
+    try { await load(); } catch (e) {}
+
+    var month = getSelectedMonth();
+    var paid = paidDaireler(month);
+    var isPaid = !!paid[daire];
+
+    var iconOk = document.getElementById('durum-icon-odendi');
+    var iconWarn = document.getElementById('durum-icon-odenmedi');
+    var wrap = document.getElementById('durum-icon-wrap');
+    var overlay = document.getElementById('durum-overlay');
+    var baslik = document.getElementById('durum-baslik');
+    var aciklama = document.getElementById('durum-aciklama');
+    var devamBtn = document.getElementById('durum-devam');
+
+    if (isPaid) {
+      overlay.style.background = 'linear-gradient(135deg, #2E5233, #3D7A52)';
+      wrap.style.background = 'rgba(255,255,255,0.18)';
+      iconOk.style.display = 'block';
+      iconWarn.style.display = 'none';
+      baslik.textContent = 'Teşekkür Ederiz';
+      aciklama.textContent = 'Daire ' + daire + ' - ' + monthLabel(month) + ' ayı aidat ödemenizi yaptığınız için teşekkür ederiz.';
+      devamBtn.style.color = '#2E5233';
+    } else {
+      overlay.style.background = 'linear-gradient(135deg, #7C2E2E, #B8503F)';
+      wrap.style.background = 'rgba(255,255,255,0.18)';
+      iconOk.style.display = 'none';
+      iconWarn.style.display = 'block';
+      baslik.textContent = 'Uyarı';
+      aciklama.textContent = 'Daire ' + daire + ' - Lütfen ' + monthLabel(month) + ' ayı aidatınızı ödeyiniz.';
+      devamBtn.style.color = '#B8503F';
+    }
+
+    overlay.style.display = 'flex';
+  }
+
+  document.getElementById('durum-devam').addEventListener('click', finishFlow);
+
+  function showTab(name) {
+    ['ozet', 'islemler', 'ayarlar'].forEach(function(t) {
+      var el = document.getElementById('tab-' + t);
+      if (el) el.style.display = (t === name) ? 'block' : 'none';
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('.navbtn'), function(b) {
+      var active = b.getAttribute('data-tab') === name;
+      b.style.color = active ? 'var(--forest)' : 'var(--slate)';
+      b.style.fontWeight = active ? '700' : '400';
+    });
+    window.scrollTo(0, 0);
+  }
+  Array.prototype.forEach.call(document.querySelectorAll('.navbtn'), function(b) {
+    b.addEventListener('click', function() { showTab(b.getAttribute('data-tab')); });
+  });
+  showTab('ozet');
+
+  initAdmin().then(load);
+})();
+</script>
+</body>
+</html>
