@@ -15,8 +15,7 @@ body { margin: 0; padding: 16px; background: #E9E4D6; box-sizing: border-box; }
 <body>
 <div id="splash-overlay" style="position: fixed; inset: 0; z-index: 9999; background: linear-gradient(135deg, #2E5233, #3D7A52); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 2rem; font-family: 'Bahnschrift', 'Segoe UI', Helvetica, Arial, sans-serif;">
   <div style="font-size: 38px; font-weight: 800; color: #fff; letter-spacing: 1px; margin-bottom: 10px; text-transform: uppercase;">Hoşgeldiniz</div>
-  <div style="font-size: 14px; color: #fff; opacity: 0.85; margin-bottom: 8px; text-transform: uppercase;">Lale Apartmanı Yönetim Sistemi</div>
-  <div style="font-size: 10px; color: #fff; opacity: 0.6; margin-bottom: 36px; text-transform: uppercase;">Crafted by KaranYaman</div>
+  <div style="font-size: 14px; color: #fff; opacity: 0.85; margin-bottom: 36px; text-transform: uppercase;">Lale Apartmanı Yönetim Sistemi</div>
   <button id="splash-devam" style="background: #fff; color: #2E5233; border: none; padding: 14px 40px; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; text-transform: uppercase;">Devam Et</button>
 </div>
 
@@ -25,7 +24,6 @@ body { margin: 0; padding: 16px; background: #E9E4D6; box-sizing: border-box; }
   <div style="font-size: 22px; font-weight: 800; color: #fff; letter-spacing: 0.5px; margin-bottom: 6px; text-transform: uppercase;">Dairenizi Seçiniz</div>
   <div style="font-size: 12px; color: #fff; opacity: 0.8; margin-bottom: 26px; text-transform: uppercase; max-width: 320px;">Aidat durumunuzu görüntülemek için daire numaranızı seçin</div>
   <div id="daire-select-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 420px; width: 100%; margin-bottom: 22px;"></div>
-  <button id="daire-select-atla" style="background: none; border: none; color: #fff; opacity: 0.65; font-size: 11px; cursor: pointer; text-decoration: underline; text-transform: uppercase; font-family: inherit;">Atla</button>
 </div>
 
 <div id="durum-overlay" style="display: none; position: fixed; inset: 0; z-index: 9998; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 2rem; font-family: 'Bahnschrift', 'Segoe UI', Helvetica, Arial, sans-serif;">
@@ -50,8 +48,9 @@ body { margin: 0; padding: 16px; background: #E9E4D6; box-sizing: border-box; }
 <div id="app" style="--paper:#F7F4EC; --card:#FFFFFF; --ink:#242E27; --wine:#B8503F; --forest:#3D7A52; --steel:#3E6E8E; --slate:#8A8676; --gold:#C99A4A; --rule:#E4DFCE; --shadow:0 1px 3px rgba(36,46,39,0.08); font-family: 'Bahnschrift', 'Segoe UI', Helvetica, Arial, sans-serif; text-transform: uppercase; background: var(--paper); color: var(--ink); border-radius: 16px; padding: 0; overflow: hidden; max-width: 800px; margin: 0 auto;">
 
 
-  <div style="padding: 1.75rem 1.75rem 1.5rem; background: linear-gradient(135deg, #2E5233, #3D7A52); text-align: center;">
+  <div style="padding: 1.75rem 1.75rem 1.5rem; background: linear-gradient(135deg, #2E5233, #3D7A52); text-align: center; position: relative;">
     <h1 style="margin: 0; font-size: 30px; font-weight: 700; color: #fff;">Lale Apartmanı</h1>
+    <div style="position: absolute; bottom: 6px; right: 12px; font-size: 8px; color: #fff; opacity: 0.5; text-transform: uppercase; letter-spacing: 0.3px;">Crafted by KGKY</div>
   </div>
 
   <div id="save-banner" style="display: none; padding: 10px 1.5rem; background: #FBEAE7; color: var(--wine); font-size: 13px; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;">
@@ -794,6 +793,7 @@ body { margin: 0; padding: 16px; background: #E9E4D6; box-sizing: border-box; }
     var groups = {};
     entries.forEach(function(e) {
       var m = entryMonth(e);
+      if (m < '2026-08') return;
       if (!groups[m]) groups[m] = { gelir: 0, gider: 0 };
       if (e.type === 'gelir') groups[m].gelir += e.amount;
       else groups[m].gider += e.amount;
@@ -1188,8 +1188,6 @@ body { margin: 0; padding: 16px; background: #E9E4D6; box-sizing: border-box; }
     document.getElementById('durum-overlay').style.display = 'none';
     try { sessionStorage.setItem('lale-flow-done', '1'); } catch (e) {}
   }
-
-  document.getElementById('daire-select-atla').addEventListener('click', finishFlow);
 
   async function onVisitorSelectDaire(daire) {
     document.getElementById('daire-select-overlay').style.display = 'none';
