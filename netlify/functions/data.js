@@ -68,4 +68,46 @@ exports.handler = async (event) => {
 
     if (body.action === 'log-visit') {
       const daire = parseInt(body.daire, 10);
-      if (!daire || daire
+      if (!daire || daire < 1 || daire > 20) {
+        return { statusCode: 400, headers, body: JSON.stringify({ error: 'Geçersiz daire' }) };
+      }
+      try {
+        const visits = (await sbGet('visits')) || [];
+        visits.push({ daire: daire, date: new Date().toISOString() });
+        const trimmed = visits.slice(-200);
+        await sbSet('visits', trimmed);
+        return { statusCode: 200, headers, body: JSON.stringify({ ok: true }) };
+      } catch (e) {
+        return { statusCode: 500, headers, body: JSON.stringify({ error: 'Supabase yazma hatası: ' + e.message }) };
+      }
+    }
+
+    const adminPassword = process.env.ADMIN_PASSWORD;
+    if (!adminPassword) {
+      return { statusCode: 500, headers, body: JSON.stringify({ error: 'Sunucuda ADMIN_PASSWORD tanımlı değil' }) };
+    }
+    if (body.password !== adminPassword) {
+      return { statusCode: 401, headers, body: JSON.stringify({ error: 'Yanlış şifre' }) };
+    }
+
+    if (body.action === 'verify') {
+      return { statusCode: 200, headers, body: JSON.stringify({ ok: true }) };
+    }
+
+    if (!Array.isArray(body.entries)) {
+      return { statusCode: 400, headers, body: JSON.stringify({ error: 'Geçersiz veri' }) };
+    }
+
+    try {
+      await sbSet('entries', body.entries);
+      if (body.daireNames && typeof body.daireNames === 'object') {
+        await sbSet('daireNames', body.daireNames);
+      }
+      return { statusCode: 200, headers, body: JSON.stringify({ ok: true }) };
+    } catch (e) {
+      return { statusCode: 500, headers, body: JSON.stringify({ error: 'Supabase yazma hatası: ' + e.message }) };
+    }
+  }
+
+  return { statusCode: 405, headers, body: JSON.stringify({ error: 'İzin verilmeyen yöntem' }) };
+};
