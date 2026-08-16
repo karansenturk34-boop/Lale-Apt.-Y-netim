@@ -1,12 +1,33 @@
-const { getStore } = require('@netlify/blobs');
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY;
 
-function getBlobStore() {
-  const siteID = process.env.BLOBS_SITE_ID;
-  const token = process.env.BLOBS_TOKEN;
-  if (siteID && token) {
-    return getStore({ name: 'apartman-defteri', siteID, token });
+async function sbGet(key) {
+  const res = await fetch(SUPABASE_URL + '/rest/v1/app_data?key=eq.' + key + '&select=value', {
+    headers: {
+      'apikey': SUPABASE_SERVICE_KEY,
+      'Authorization': 'Bearer ' + SUPABASE_SERVICE_KEY
+    }
+  });
+  if (!res.ok) throw new Error('Supabase GET failed: ' + res.status);
+  const rows = await res.json();
+  return rows.length > 0 ? rows[0].value : null;
+}
+
+async function sbSet(key, value) {
+  const res = await fetch(SUPABASE_URL + '/rest/v1/app_data', {
+    method: 'POST',
+    headers: {
+      'apikey': SUPABASE_SERVICE_KEY,
+      'Authorization': 'Bearer ' + SUPABASE_SERVICE_KEY,
+      'Content-Type': 'application/json',
+      'Prefer': 'resolution=merge-duplicates'
+    },
+    body: JSON.stringify({ key: key, value: value })
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error('Supabase SET failed: ' + res.status + ' ' + text);
   }
-  return getStore('apartman-defteri');
 }
 
 exports.handler = async (event) => {
@@ -22,13 +43,19 @@ exports.handler = async (event) => {
     return { statusCode: 204, headers, body: '' };
   }
 
-  const store = getBlobStore();
+  if (!SUPABASE_URL || !SUPABASE_SERVICE_KEY) {
+    return { statusCode: 500, headers, body: JSON.stringify({ error: 'Sunucuda SUPABASE_URL veya SUPABASE_SERVICE_KEY tanımlı değil' }) };
+  }
 
   if (event.httpMethod === 'GET') {
-    const entries = await store.get('entries', { type: 'json' });
-    const daireNames = await store.get('daireNames', { type: 'json' });
-    const visits = await store.get('visits', { type: 'json' });
-    return { statusCode: 200, headers, body: JSON.stringify({ entries: entries || [], daireNames: daireNames || {}, visits: visits || [] }) };
+    try {
+      const entries = await sbGet('entries');
+      const daireNames = await sbGet('daireNames');
+      const visits = await sbGet('visits');
+      return { statusCode: 200, headers, body: JSON.stringify({ entries: entries || [], daireNames: daireNames || {}, visits: visits || [] }) };
+    } catch (e) {
+      return { statusCode: 500, headers, body: JSON.stringify({ error: 'Supabase okuma hatası: ' + e.message }) };
+    }
   }
 
   if (event.httpMethod === 'POST') {
@@ -41,38 +68,4 @@ exports.handler = async (event) => {
 
     if (body.action === 'log-visit') {
       const daire = parseInt(body.daire, 10);
-      if (!daire || daire < 1 || daire > 20) {
-        return { statusCode: 400, headers, body: JSON.stringify({ error: 'Geçersiz daire' }) };
-      }
-      const visits = (await store.get('visits', { type: 'json' })) || [];
-      visits.push({ daire: daire, date: new Date().toISOString() });
-      const trimmed = visits.slice(-200);
-      await store.setJSON('visits', trimmed);
-      return { statusCode: 200, headers, body: JSON.stringify({ ok: true }) };
-    }
-
-    const adminPassword = process.env.ADMIN_PASSWORD;
-    if (!adminPassword) {
-      return { statusCode: 500, headers, body: JSON.stringify({ error: 'Sunucuda ADMIN_PASSWORD tanımlı değil' }) };
-    }
-    if (body.password !== adminPassword) {
-      return { statusCode: 401, headers, body: JSON.stringify({ error: 'Yanlış şifre' }) };
-    }
-
-    if (body.action === 'verify') {
-      return { statusCode: 200, headers, body: JSON.stringify({ ok: true }) };
-    }
-
-    if (!Array.isArray(body.entries)) {
-      return { statusCode: 400, headers, body: JSON.stringify({ error: 'Geçersiz veri' }) };
-    }
-
-    await store.setJSON('entries', body.entries);
-    if (body.daireNames && typeof body.daireNames === 'object') {
-      await store.setJSON('daireNames', body.daireNames);
-    }
-    return { statusCode: 200, headers, body: JSON.stringify({ ok: true }) };
-  }
-
-  return { statusCode: 405, headers, body: JSON.stringify({ error: 'İzin verilmeyen yöntem' }) };
-};
+      if (!daire || daire
